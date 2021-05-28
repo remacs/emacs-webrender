@@ -1,17 +1,14 @@
 [package]
-name = "remacs-lib"
+name = "ng-docfile"
 version = "0.1.0"
 edition = "2018"
 
 [dependencies]
 lisp-util = { version = "0.1.0", path = "../crates/lisp_util" }
-darling = "0.2"
 errno = "0.2"
 lazy_static = "1.2"
 libc = "0.2"
-rand = "0.6.5"
 regex = "1.1"
-time = "0.1"
 
 [lib]
 path = "lib.rs"

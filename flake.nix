@@ -126,7 +126,7 @@
                 '';
 
                 remacsLibDeps = prev.rustPlatform.fetchCargoTarball {
-                  src = emacsNgSource + /rust_src/remacs-lib;
+                  src = emacsNgSource + /rust_src/ng-docfile;
                   name = "remacsLibDeps";
                   cargoUpdateHook =
                     let

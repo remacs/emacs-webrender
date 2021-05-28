@@ -387,8 +387,8 @@ TAGS: etags${EXEEXT} ${tagsfiles}
 ../lib/libgnu.a: $(config_h)
 	$(MAKE) -C ../lib all
 
-cargo_manifest=../rust_src/remacs-lib/Cargo.toml
-$(RUST_ARCHIVE): $(rust_srcdir)/remacs-lib/**
+cargo_manifest=../rust_src/ng-docfile/Cargo.toml
+$(RUST_ARCHIVE): $(rust_srcdir)/ng-docfile/**
 	RUSTFLAGS="$(RUSTFLAGS)" \
 	$(CARGO_BUILD) $(CARGO_FLAGS) --manifest-path=$(cargo_manifest)
 

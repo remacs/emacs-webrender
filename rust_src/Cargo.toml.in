@@ -8,12 +8,12 @@ build = "build.rs"
 edition = "2018"
 
 [workspace]
-members = ["remacs-lib", "crates/*"]
+members = ["ng-docfile", "crates/*"]
 exclude = ["remacs-bindings"]
 
 [dependencies]
 app_units = { version = "0.7.1", optional = true }
-remacs-lib = { version = "0.1.0", path = "remacs-lib" }
+ng-docfile = { version = "0.1.0", path = "ng-docfile" }
 emacs = { version = "0.1.0", path = "crates/emacs" }
 lisp-util = { version = "0.1.0", path = "crates/lisp_util" }
 lisp-macros = { version = "0.1.0", path = "crates/lisp_macros" }

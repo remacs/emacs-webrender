@@ -37,7 +37,7 @@ along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "process.h"
 #include "frame.h"
 #include "keymap.h"
-#include "remacs-lib.h"
+#include "ng-docfile.h"
 
 static void swap_in_symval_forwarding (struct Lisp_Symbol *,
 				       struct Lisp_Buffer_Local_Value *);

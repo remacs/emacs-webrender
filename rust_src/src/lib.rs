@@ -25,7 +25,6 @@ extern crate git;
 extern crate lisp_macros;
 #[macro_use]
 extern crate lisp_util;
-extern crate remacs_lib;
 
 #[cfg(feature = "window-system-webrender")]
 mod webrender_backend;

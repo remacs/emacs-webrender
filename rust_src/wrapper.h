@@ -38,7 +38,7 @@
 #include "puresize.h"
 /* #include "regex.h" */
 #include "region-cache.h"
-#include "remacs-lib.h"
+#include "ng-docfile.h"
 #include "sheap.h"
 #include "syntax.h"
 #include "sysselect.h"

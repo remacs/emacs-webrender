@@ -7,5 +7,5 @@ extern crate syn;
 
 mod attributes;
 
-// Used by remacs-macros and remacs-lib
+// Used by remacs-macros and ng-docfile
 pub use self::attributes::parse_lisp_fn;

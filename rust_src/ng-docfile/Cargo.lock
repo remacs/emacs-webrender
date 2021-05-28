@@ -270,7 +270,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b181ba2dcf07aaccad5448e8ead58db5b742cf85dfe035e2227f137a539a189"
 
 [[package]]
-name = "remacs-lib"
+name = "ng-docfile"
 version = "0.1.0"
 dependencies = [
  "darling",
