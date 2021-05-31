@@ -25,7 +25,7 @@ use std::{
     ptr,
 };
 
-#[cfg(unix)]
+#[cfg(all(unix, not(target_os = "macos")))]
 use glutin::platform::unix::EventLoopExtUnix;
 #[cfg(windows)]
 use glutin::platform::windows::EventLoopExtUnix;
@@ -152,7 +152,11 @@ impl Output {
         let (event_tx, event_rx) = channel::<GUIEvent>();
 
         let window_loop_thread = std::thread::spawn(move || {
+            #[cfg(all(unix, not(target_os = "macos")))]
             let events_loop = glutin::event_loop::EventLoop::new_any_thread();
+            #[cfg(target_os = "macos")]
+            let events_loop = glutin::event_loop::EventLoop::<EmacsGUIEvent>::new();
+
             let window_builder = glutin::window::WindowBuilder::new()
                 .with_visible(true)
                 .with_maximized(true);

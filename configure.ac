@@ -1893,6 +1893,7 @@ fi
 
 NATIVE_IMAGE_API=no
 
+test "${with_ns}" = maybe && test "${with_webrender}" = "yes" && with_ns=no
 test "${with_ns}" = maybe && test "${opsys}" != darwin && with_ns=no
 HAVE_NS=no
 NS_GNUSTEP_CONFIG=no
@@ -5477,8 +5478,10 @@ if test "${window_system}" = "webrender" ; then
   AC_DEFINE(USE_WEBRENDER, 1,
 	    [Define to 1 if you want to use the webrender.])
 
-  EMACS_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.2.0])
-  test "$HAVE_FONTCONFIG" = "no" && AC_MSG_ERROR(webrender requires libfontconfig)
+  if test "${opsys}" != "darwin" ; then
+    EMACS_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.2.0])
+    test "$HAVE_FONTCONFIG" = "no" && AC_MSG_ERROR(webrender requires libfontconfig)
+  fi
 
   EMACS_CHECK_MODULES([XCB], [xcb >= 1.0.0])
   test "$HAVE_XCB" = "no" && AC_MSG_ERROR(webrender requires libxcb)

@@ -139,6 +139,11 @@ typedef struct wr_bitmap_record Bitmap_Record;
 #define PIX_MASK_RETAIN	0
 #define PIX_MASK_DRAW	1
 
+void image_sync_to_pixmaps (struct frame *, struct image *);
+
+void image_pixmap_draw_cross(struct frame *, Emacs_Pixmap, int, int, unsigned int,
+  unsigned int, unsigned long);
+
 #endif /* WITH_WEBRENDER */
 
 
