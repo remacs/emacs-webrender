@@ -4,7 +4,7 @@ use std::io::{BufReader, BufWriter, Result};
 use std::process::{Child, Command, Stdio};
 use std::thread;
 
-use lsp_server::{Message, Request, RequestId, Response};
+use lsp_server::{Message, Request, RequestId, Response, Notification};
 use serde_json::{map::Map, Value};
 
 use ng_async::ng_async::{to_owned_userdata, EmacsPipe, PipeDataOption, UserData};
@@ -24,8 +24,8 @@ use emacs::bindings::{
 
 use emacs::globals::{
     QCarray_type, QCfalse, QCfalse_object, QCjson_config, QCnull, QCnull_object, QCobject_type,
-    QCsize, QCtest, Qalist, Qarray, Qequal, Qhash_table, Qlist, Qnil, Qplist, Qplistp, Qt,
-    Qunbound,
+    QCser_false_object, QCser_null_object, QCsize, QCtest, Qalist, Qarray, Qequal, Qhash_table,
+    Qlist, Qnil, Qplist, Qplistp, Qt, Qunbound,
 };
 
 const ID: &str = "id";
@@ -59,6 +59,8 @@ pub struct JSONConfiguration {
     pub arr: ArrayType,
     pub null_obj: LispObject,
     pub false_obj: LispObject,
+    pub ser_null_obj: LispObject,
+    pub ser_false_obj: LispObject,
 }
 
 impl Default for JSONConfiguration {
@@ -68,6 +70,8 @@ impl Default for JSONConfiguration {
             arr: ArrayType::Array,
             null_obj: QCnull,
             false_obj: QCfalse,
+            ser_null_obj: QCnull,
+            ser_false_obj: QCfalse,
         }
     }
 }
@@ -315,12 +319,12 @@ fn serde_to_lisp(
     config: &JSONConfiguration,
 ) -> std::result::Result<LispObject, String> {
     let result = match value {
-        Value::Null => config.null_obj,
+        Value::Null => config.ser_null_obj,
         Value::Bool(b) => {
             if b {
                 Qt
             } else {
-                config.false_obj
+                config.ser_false_obj
             }
         }
         Value::Number(n) => {
@@ -503,6 +507,12 @@ fn generate_config_from_args(args: &[LispObject]) -> JSONConfiguration {
             QCfalse_object => {
                 config.false_obj = value;
             }
+            QCser_null_object => {
+                config.ser_null_obj = value;
+            }
+            QCser_false_object => {
+                config.ser_false_obj = value;
+            }
             _ => {
                 error!("Wrong type: must be :object-type, :array-type, :null-object, :false-object")
             }
@@ -562,12 +572,39 @@ pub fn ser(o: LispObject) -> Result<String> {
 }
 
 #[lisp_fn]
-pub fn lsp_async_send_request(proc: LispObject, method: LispObject, params: LispObject) -> bool {
+pub fn lsp_async_send_request(
+    proc: LispObject,
+    method: LispObject,
+    params: LispObject,
+    id: LispObject,
+) -> bool {
+    let mut emacs_pipe = unsafe { EmacsPipe::with_process(proc) };
+    let method_s: LispStringRef = method.into();
+    let id_s: LispStringRef = id.into();
+    let config = get_process_json_config(proc);
+    let value = lisp_to_serde(params, &config);
+    let request = Message::Request(Request::new(
+        RequestId::from(id_s.to_utf8()),
+        method_s.to_utf8(),
+        value.unwrap(),
+    ));
+    if let Err(e) = emacs_pipe.message_rust_worker(UserData::new(request)) {
+        error!("Failed to send request to server, reason {:?}", e);
+    }
+    true
+}
+
+#[lisp_fn]
+pub fn lsp_async_send_notification(
+    proc: LispObject,
+    method: LispObject,
+    params: LispObject,
+) -> bool {
     let mut emacs_pipe = unsafe { EmacsPipe::with_process(proc) };
     let method_s: LispStringRef = method.into();
     let config = get_process_json_config(proc);
     let value = lisp_to_serde(params, &config);
-    let request = Message::Request(Request::new(RequestId::from(0), method_s.to_utf8(), value));
+    let request = Message::Notification(Notification::new(method_s.to_utf8(), value.unwrap()));
     if let Err(e) = emacs_pipe.message_rust_worker(UserData::new(request)) {
         error!("Failed to send request to server, reason {:?}", e);
     }
@@ -638,6 +675,8 @@ fn init_syms() {
     def_lisp_sym!(QCarray_type, ":array-type");
     def_lisp_sym!(QCnull_object, ":null-object");
     def_lisp_sym!(QCfalse_object, ":false-object");
+    def_lisp_sym!(QCser_null_object, ":ser-null-object");
+    def_lisp_sym!(QCser_false_object, ":ser-false-object");
     def_lisp_sym!(QCjson_config, ":json-config");
     def_lisp_sym!(Qalist, "alist");
     def_lisp_sym!(Qplist, "plist");
