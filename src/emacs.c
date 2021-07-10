@@ -1170,7 +1170,7 @@ maybe_load_seccomp (int argc, char **argv)
 #endif  /* SECCOMP_USABLE */
 
 int
-main (int argc, char **argv)
+emacs_main (int argc, char **argv)
 {
   /* Variable near the bottom of the stack, and aligned appropriately
      for pointers.  */
