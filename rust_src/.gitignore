@@ -1,3 +1,5 @@
+Cargo.lock
+
 target
 
 crates/emacs/src/bindings.rs
